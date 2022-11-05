@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs/promises';
 
-import octaveTaskbook from './data/octave/taskbook';
+import octaveTaskbook from '../../data/octave/taskbook';
 
 const content = {
   octave: {
@@ -22,7 +22,7 @@ export class ContentService {
     chapterId: string,
   ) {
     const description = await fs.readFile(
-      `./src/content/data/${course}/${type}/${lang}/${chapterId}.md`,
+      `./data/${course}/${type}/${lang}/${chapterId}.md`,
       'utf-8',
     );
 
