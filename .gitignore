@@ -37,3 +37,8 @@ lerna-debug.log*
 # Jobs
 jobs/*
 !jobs/.gitkeep
+
+# Tests
+data/*/*/tests/*/*
+!data/octave/taskbook/tests/variables-and-conditions/square-root-of-value.m
+!data/octave/taskbook/tests/arrays-and-cycles/squares-in-rectangle.m

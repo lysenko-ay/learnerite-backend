@@ -30,4 +30,21 @@ export class ContentService {
       description,
     };
   }
+
+  async getTaskContent(
+    lang: string,
+    course: string,
+    type: string,
+    chapterId: string,
+    taskId: string,
+  ) {
+    const description = await fs.readFile(
+      `./data/${course}/${type}/locale/${lang}/${chapterId}/${taskId}.md`,
+      'utf-8',
+    );
+
+    return {
+      description,
+    };
+  }
 }

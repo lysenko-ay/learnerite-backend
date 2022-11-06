@@ -11,29 +11,35 @@ export class ContentController {
     return this.contentService.getContent('ru', course, type);
   }
 
-  @Get(':course/:type/:chapter')
+  @Get(':course/:type/:chapterId')
   @Header('Access-Control-Allow-Origin', '*')
   async getChapter(
     @Param('course') course: string,
     @Param('type') type: string,
-    @Param('chapter') chapter: string,
+    @Param('chapterId') chapterId: string,
   ) {
     return await this.contentService.getChapterContent(
       'ru',
       course,
       type,
-      chapter,
+      chapterId,
     );
   }
 
-  @Get(':course/:type/:chapter/:task')
+  @Get(':course/:type/:chapterId/:taskId')
   @Header('Access-Control-Allow-Origin', '*')
-  getTask(
+  async getTask(
     @Param('course') course: string,
     @Param('type') type: string,
-    @Param('chapter') chapter: string,
-    @Param('task') task: string,
+    @Param('chapterId') chapterId: string,
+    @Param('taskId') taskId: string,
   ) {
-    return { course, type, chapter, task };
+    return await this.contentService.getTaskContent(
+      'ru',
+      course,
+      type,
+      chapterId,
+      taskId,
+    );
   }
 }
