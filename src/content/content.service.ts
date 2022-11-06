@@ -22,7 +22,7 @@ export class ContentService {
     chapterId: string,
   ) {
     const description = await fs.readFile(
-      `./data/${course}/${type}/${lang}/${chapterId}.md`,
+      `./data/${course}/${type}/locale/${lang}/${chapterId}.md`,
       'utf-8',
     );
 
