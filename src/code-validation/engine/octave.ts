@@ -82,7 +82,7 @@ function processContainer(container: any): Promise<any> {
           container.wait((err: any, data: any) => {
             // trim error message from next bug: https://savannah.gnu.org/bugs/?62515
             // error: ignoring const execution_exception& while preparing to exit\r\n
-            stdout = stdout.slice(0, -70);
+            // stdout = stdout.slice(0, -70);
             container
               .remove()
               .then(() => resolve({ code: data.StatusCode, stdout }));
@@ -98,7 +98,7 @@ export function execute(code: string): Promise<string> {
     docker.createContainer(
       containerOptions(fileName),
       async (err, container: any) => {
-        if (container === null) {
+        if (err) {
           reject({ error: err });
           return;
         }
@@ -119,7 +119,7 @@ export async function test(
   usercode: string,
 ): Promise<string> {
   return new Promise(async (resolve, reject) => {
-    if (!existsSync(testPath)) {
+    if (!existsSync(`./data/${testPath}.m`)) {
       return reject('test not found');
     }
 
@@ -128,7 +128,11 @@ export async function test(
       .replace('%{usercode}%', usercode)
       .replace(/%!s.+%!e/gms, '');
 
-    const stdout = await execute(code);
-    resolve(stdout);
+    try {
+      const stdout = await execute(code);
+      resolve(stdout);
+    } catch (err) {
+      reject(err);
+    }
   });
 }
