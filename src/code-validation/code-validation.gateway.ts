@@ -6,8 +6,11 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 
+import { RecaptchaGuard } from 'src/recaptcha/recaptcha.guard';
+
 import { QueueService } from 'src/queue/queue.service';
 import { test } from './engine/octave';
+import { UseGuards } from '@nestjs/common';
 
 const engines = {
   octave: { test },
@@ -24,6 +27,7 @@ export class CodeValidationGateway {
   @WebSocketServer()
   server;
 
+  @UseGuards(RecaptchaGuard)
   @SubscribeMessage('register')
   handleMessage(
     @MessageBody('course') course: string,

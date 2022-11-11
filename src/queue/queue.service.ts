@@ -27,6 +27,10 @@ export class QueueService {
     resolve(this.next.bind(this));
   }
 
+  length() {
+    return queue.length;
+  }
+
   next() {
     this.lastJobId += 1;
     runningJobs -= 1;
