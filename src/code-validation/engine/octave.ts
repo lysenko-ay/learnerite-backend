@@ -4,8 +4,6 @@ import * as moment from 'moment';
 import * as tar from 'tar';
 import { existsSync } from 'fs';
 
-// time for container to execute it's task
-const EXECUTION_TIMEOUT = 3;
 // magic value to differentiate user output from test
 const OCC_MAGIC = 96; // char(96) = "`"
 
@@ -61,7 +59,7 @@ function textToFile(text: string): Promise<string> {
   });
 }
 
-function processContainer(container: any): Promise<any> {
+function processContainer(container: any, timeout: number): Promise<any> {
   return new Promise((resolve, reject) => {
     let stdout: Buffer = Buffer.from('');
 
@@ -73,16 +71,14 @@ function processContainer(container: any): Promise<any> {
         });
 
         container.start().then(() => {
-          container.stop({ t: EXECUTION_TIMEOUT }, (err: any) => {
-            if (err) {
+          container.stop({ t: timeout }, (err: any) => {
+            // if countainer is already stopped do not reject promise
+            if (err && err.statusCode != 304) {
               reject(err);
             }
           });
 
           container.wait((err: any, data: any) => {
-            // trim error message from next bug: https://savannah.gnu.org/bugs/?62515
-            // error: ignoring const execution_exception& while preparing to exit\r\n
-            // stdout = stdout.slice(0, -70);
             container
               .remove()
               .then(() => resolve({ code: data.StatusCode, stdout }));
@@ -92,7 +88,7 @@ function processContainer(container: any): Promise<any> {
   });
 }
 
-export function execute(code: string): Promise<string> {
+export function execute(code: string, timeout: number): Promise<string> {
   return new Promise(async (resolve, reject) => {
     const fileName = await textToFile(code);
     docker.createContainer(
@@ -106,7 +102,7 @@ export function execute(code: string): Promise<string> {
         container
           .putArchive(`jobs/${fileName}.tar`, { path: '/usr/src/app/' })
           .then(async () => {
-            const result: any = await processContainer(container);
+            const result: any = await processContainer(container, timeout);
             resolve(result);
           });
       },
@@ -117,6 +113,7 @@ export function execute(code: string): Promise<string> {
 export async function test(
   testPath: string,
   usercode: string,
+  timeout: number,
 ): Promise<string> {
   return new Promise(async (resolve, reject) => {
     if (!existsSync(`./data/${testPath}.m`)) {
@@ -129,7 +126,7 @@ export async function test(
       .replace(/%!s.+%!e/gms, '');
 
     try {
-      const stdout = await execute(code);
+      const stdout = await execute(code, timeout);
       resolve(stdout);
     } catch (err) {
       reject(err);

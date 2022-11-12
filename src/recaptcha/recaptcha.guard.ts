@@ -14,8 +14,7 @@ export class RecaptchaGuard implements CanActivate {
     private httpService: HttpService,
     private configService: ConfigService,
   ) {
-    // this.queueLimit = this.configService.get('MAX_QUEUED_JOBS_WITHOUT_CAPTCHA');
-    this.queueLimit = 0;
+    this.queueLimit = this.configService.get('MAX_QUEUED_JOBS_WITHOUT_CAPTCHA');
     this.secret = this.configService.get('RECAPTCHA_SECRET_KEY');
   }
 

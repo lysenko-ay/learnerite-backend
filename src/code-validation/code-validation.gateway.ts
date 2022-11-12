@@ -11,6 +11,7 @@ import { RecaptchaGuard } from 'src/recaptcha/recaptcha.guard';
 import { QueueService } from 'src/queue/queue.service';
 import { test } from './engine/octave';
 import { UseGuards } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 const engines = {
   octave: { test },
@@ -22,7 +23,16 @@ const engines = {
   },
 })
 export class CodeValidationGateway {
-  constructor(private queueService: QueueService) {}
+  executionTimeout: number;
+
+  constructor(
+    private queueService: QueueService,
+    private configService: ConfigService,
+  ) {
+    this.executionTimeout = parseInt(
+      this.configService.get('EXECUTION_TIMEOUT'),
+    );
+  }
 
   @WebSocketServer()
   server;
@@ -52,6 +62,7 @@ export class CodeValidationGateway {
           const result = await engines[course].test(
             `${course}/${type}/tests/${chapterId}/${taskId}`,
             code,
+            this.executionTimeout,
           );
           client.emit('result', result);
         } catch (err) {
