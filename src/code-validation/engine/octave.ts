@@ -13,7 +13,7 @@ let jobId = 1;
 
 const containerOptions = (code: string) => {
   return {
-    Image: 'alextheregent/learnerite-core:latest',
+    Image: 'alextheregent/learnerite-core-octave:latest',
     Cmd: [
       'octave-cli',
       '--no-window-system',
