@@ -19,9 +19,10 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm ci --only=production
+RUN npm install
 
 COPY --from=build /usr/src/app/dist ./dist
+COPY --from=build /usr/src/app/data ./data
 RUN mkdir -p jobs
 
 CMD ["node", "dist/src/main"]
